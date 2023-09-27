@@ -4,12 +4,14 @@ const state = {
         enemy: document.querySelector(".enemy"),
         timeLeft: document.querySelector("#time-left"),
         score: document.querySelector("#score"),
+        life: document.querySelector("#life"),
     },
     values: {
         gameVelocity: 1000,
         hitPosition: 0,
         result: 0,
         currentTime: 60,
+        lifes: 3,
     },
     actions: {
         timeId: setInterval(randomSquare, 1000),
@@ -20,12 +22,18 @@ const state = {
 function countDown() {
     state.values.currentTime--;
     state.view.timeLeft.textContent = state.values.currentTime;
-
-    if (state.values.currentTime <= 0) {
+    if (state.values.currentTime <= 0 || state.values.lifes === 0) {
         clearInterval(state.actions.countDownTimeId)
         clearInterval(state.actions.timeId)
         alert("Game Over! O seu resultado foi: "+state.values.result);
+        window.location.reload();   
     }
+}
+
+function playSound(audioName) {
+    let audio = new Audio(`./src/audios/${audioName}`);
+    audio.volume = 0.2;
+    audio.play();
 }
 
 function randomSquare() {
@@ -46,7 +54,12 @@ function addListenerHitBox() {
                 state.values.result++
                 state.view.score.textContent = state.values.result;
                 state.values.hitPosition = null;
+                playSound("hit.m4a");
+            }else {
+                playSound("error.mp3");
+                state.values.lifes--;
             }
+            state.view.life.textContent = state.values.lifes;
         })
     })
 }
